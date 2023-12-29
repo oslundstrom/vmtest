@@ -11,6 +11,10 @@ STREAM="stable"
 DISK_GB="10"
 # For x86 / aarch64,
 IGNITION_DEVICE_ARG=(--qemu-commandline="-fw_cfg name=opt/com.coreos/config,file=${IGNITION_CONFIG}")
+APPARMOR_FILE=/etc/apparmor.d/libvirt/TEMPLATE.qemu
+if ! grep -q ${IGNITION_CONFIG} ${APPARMOR_FILE}; then
+  sudo sed -i '/  #include <abstractions\/libvirt-qemu>/a\ \ '"${IGNITION_CONFIG}"' rk,' ${APPARMOR_FILE}
+fi
 
 # Setup the correct SELinux label to allow access to the config
 #chcon --verbose --type svirt_home_t ${IGNITION_CONFIG}
